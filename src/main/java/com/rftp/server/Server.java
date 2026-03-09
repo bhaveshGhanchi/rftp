@@ -3,6 +3,8 @@ package com.rftp.server;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
+import com.rftp.packet.Packet;
+
 public class Server {
     public static void main(String[] args){
 
@@ -14,12 +16,13 @@ public class Server {
             byte[] buffer = new byte[65535];
 
             while(true){
-                DatagramPacket p = new DatagramPacket(buffer, buffer.length);
-                s.receive(p);
-                String message = new String(p.getData(),0,p.getLength());
+                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                s.receive(packet);
+                Packet parsed = Packet.fromBytes(packet.getData(), packet.getLength());
 
-                System.out.println("Recieved: "+ message);
-                System.out.println("From: "+ p.getAddress()+" "+p.getPort() +" "+p.getLength());
+                System.out.println("Recieved: "+ parsed.getPayload().length + " bytes");
+                System.out.println("Recieved: "+ new String(parsed.getPayload()));
+                System.out.println("From: "+ packet.getAddress()+" "+packet.getPort() +" "+packet.getLength()+" "+parsed.getSequenceNumber());
                 System.out.println("---------------------");
             }
 
